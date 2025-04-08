@@ -3,7 +3,7 @@
 
 <head>
     <title>Paasivu</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../index.css">
 
     <script>
 
@@ -16,13 +16,13 @@
 
             console.log("after change", editParagraphMode);
 
-            const ParagraphElement = document.getElementById("title")
-            const inputElement = document.getElementById("titleInput")
+            const ParagraphElement = document.getElementById("title");
+            const inputElement = document.getElementById("titleInput");
 
             if (!editParagraphMode) {
-                const title = inputElement.value
-                ParagraphElement.innerHTML = title
-                localStorage.setItem("title", title)
+                const title = inputElement.value;
+                ParagraphElement.innerHTML = title;
+                localStorage.setItem("title", title);
             }
 
             ParagraphElement.hidden = editParagraphMode;
@@ -32,11 +32,27 @@
 
         function handleLoad() {
             const title = localStorage.getItem("title")
-            document.getElementById("title").innerHTML = title
-            document.getElementById("titleInput").value = title
+            document.getElementById("title").innerHTML = title;
+            document.getElementById("titleInput").value = title;
         }
 
         addEventListener("load", handleLoad)
+
+        function handleAddLink(e) {
+
+            const button = e.target
+            const editMode = button.innerHTML == "+"
+            const inputHidden = !editMode
+            
+            if (editMode) {
+                button.innerHTML = "Save"
+            } else {
+                button.innerHTML = "+"
+            }
+
+            document.getElementById("linkRef").hidden = !editHidden
+            document.getElementById("linkName").hidden = !editHidden
+        }
 
     </script>
 </head>
@@ -94,10 +110,11 @@
             <button id="titleButton" onclick="handleParagraphEdit()">Edit</button>
         </div>
         <div class="footer-right">
-            <a href="#">Link 1</a>
-            <a href="#">Link 2</a>
-            <a href="#">Link 3</a>
-            <a href="#">Link 4</a>
-            <a href="#">Link 5</a>
-            <a href="#">Link 6</a>
+        </div>
+        <div class="footer-right">
+            <div>
+                <input id="linkRef" placeholder="URL" hidden>
+                <input id="linkName" placeholder="Name" hidden>
+            </div>
+            <button onclick="handleAddLink(event)">+</button>
         </div>
