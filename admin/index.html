@@ -30,10 +30,27 @@
             document.getElementById("titleButton").innerHTML = editParagraphMode ? "Save" : "Edit";
         }
 
+        const savedLinks = localStorage.getItem("links-list")
+
+        const linksList = savedLinks ? JSON.parse(savedLinks) : []
+
         function handleLoad() {
             const title = localStorage.getItem("title")
             document.getElementById("title").innerHTML = title;
             document.getElementById("titleInput").value = title;
+
+            // Here we create html element 
+            const listElement = document.getElementById("link-list")
+
+            linksList.forEach(linkJson => {
+                // <a href="https://www.tai.fi">TAI</a>
+                const aElement = document.createElement("a")
+                aElement.innerHTML = linkJson.name
+                aElement.href = linkJson.href
+
+                listElement.appendChild(aElement)
+
+            });
         }
 
         addEventListener("load", handleLoad)
@@ -43,15 +60,39 @@
             const button = e.target
             const editMode = button.innerHTML == "+"
             const inputHidden = !editMode
-            
+
+            const refInput = document.getElementById("linkRef")
+            const nameInput = document.getElementById("linkName")
+
+            refInput.hidden = inputHidden
+            nameInput.hidden = inputHidden
+
             if (editMode) {
                 button.innerHTML = "Save"
             } else {
                 button.innerHTML = "+"
+
+                // Here we create html element 
+                const listElement = document.getElementById("link-list")
+
+                // <a href="https://www.tai.fi">TAI</a>
+                const aElement = document.createElement("a")
+                aElement.innerHTML = nameInput.value
+                aElement.href = refInput.value
+
+                listElement.appendChild(aElement)
+
+                // Here we save into the list
+                const linkJson = {
+                    href: refInput.value,
+                    name: nameInput.value,
+                }
+                linksList.push(linkJson)
+
+                localStorage.setItem("links-list", JSON.stringify(linksList))
             }
 
-            document.getElementById("linkRef").hidden = !editHidden
-            document.getElementById("linkName").hidden = !editHidden
+
         }
 
     </script>
@@ -109,7 +150,7 @@
             <input id="titleInput" hidden>
             <button id="titleButton" onclick="handleParagraphEdit()">Edit</button>
         </div>
-        <div class="footer-right">
+        <div id="link-list" class="footer-right">
         </div>
         <div class="footer-right">
             <div>
