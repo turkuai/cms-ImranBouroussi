@@ -6,14 +6,27 @@
     <link rel="stylesheet" href="index.css">
 
     <script>
-
         function handleLoad() {
-            const title = localStorage.getItem("title")
+            
+            const title = localStorage.getItem("title");
             document.getElementById("title").innerHTML = title;
+
+            
+            const savedLinks = localStorage.getItem("links-list");
+            const linksList = savedLinks ? JSON.parse(savedLinks) : [];
+
+            const listElement = document.querySelector(".footer-right");
+            linksList.forEach(linkJson => {
+                const aElement = document.createElement("a");
+                aElement.innerHTML = linkJson.name;
+                aElement.href = linkJson.href;
+                aElement.target = "_blank"; 
+                aElement.style.display = "block"; 
+                listElement.appendChild(aElement);
+            });
         }
 
-        addEventListener("load", handleLoad)
-
+        addEventListener("load", handleLoad);
     </script>
 </head>
 
@@ -35,10 +48,7 @@
             <div class="article">
                 <div class="article-text">
                     <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
+                        incidunt ut labore et dolore magna aliqua...</p>
                 </div>
                 <div class="article-image">
                     <img class="hakimi" src="https://img.uefa.com/imgml/TP/players/1/2025/cutoff/250088061.webp"
@@ -48,10 +58,7 @@
             <div class="article">
                 <div class="article-text">
                     <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
+                        incidunt ut labore et dolore magna aliqua...</p>
                 </div>
                 <div class="article-image">
                     <img class="brahim" src="https://s.hs-data.com/bilder/spieler/gross/333919.jpg" alt="Realmadrid">
@@ -68,3 +75,7 @@
         <div class="footer-right">
             
         </div>
+    </footer>
+
+</body>
+</html>
