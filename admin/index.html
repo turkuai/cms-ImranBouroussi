@@ -2,10 +2,11 @@
 <html>
 
 <head>
-    <title>Paasivu - Admin</title>
+    <title>Admin - Paasivu</title>
     <link rel="stylesheet" href="../index.css">
 
     <script>
+        // Edit and save the title/content
         function handleParagraphEdit(id = "title") {
             let isEditing = localStorage.getItem(`editMode-${id}`) === "true";
             isEditing = !isEditing;
@@ -26,9 +27,7 @@
             localStorage.setItem(`editMode-${id}`, isEditing);
         }
 
-        const savedLinks = localStorage.getItem("links-list");
-        const linksList = savedLinks ? JSON.parse(savedLinks) : [];
-
+        // Load title, links, articles, and logo from localStorage
         function handleLoad() {
             const ids = ["title", "articleTitle1", "articleText1"];
             ids.forEach(id => {
@@ -47,6 +46,8 @@
             }
 
             const listElement = document.getElementById("link-list");
+            const savedLinks = localStorage.getItem("links-list");
+            const linksList = savedLinks ? JSON.parse(savedLinks) : [];
             linksList.forEach(linkJson => {
                 const aElement = document.createElement("a");
                 aElement.innerHTML = linkJson.name;
@@ -77,6 +78,7 @@
             }
         }
 
+        // Add a link
         function handleAddLink(e) {
             const button = e.target;
             const editMode = button.innerHTML === "+";
@@ -105,23 +107,20 @@
                     href: refInput.value,
                     name: nameInput.value,
                 };
-                linksList.push(linkJson);
-
-                localStorage.setItem("links-list", JSON.stringify(linksList));
+                const savedLinks = JSON.parse(localStorage.getItem("links-list")) || [];
+                savedLinks.push(linkJson);
+                localStorage.setItem("links-list", JSON.stringify(savedLinks));
             }
         }
 
+        // Add an article
         function handleAddArticle() {
             const title = document.getElementById("articleTitleInput").value;
             const content = document.getElementById("articleContentInput").value;
 
             if (!title || !content) return;
 
-            const article = {
-                title: title,
-                content: content
-            };
-
+            const article = { title, content };
             let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
             savedArticles.push(article);
             localStorage.setItem("added-articles", JSON.stringify(savedArticles));
@@ -132,6 +131,7 @@
             document.getElementById("articleContentInput").value = "";
         }
 
+        // Remove an article
         function handleRemoveArticle(index) {
             let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
             savedArticles.splice(index, 1);
@@ -140,6 +140,7 @@
             renderArticles(savedArticles);
         }
 
+        // Render articles
         function renderArticles(articles) {
             const articlesList = document.getElementById("articles-list");
             articlesList.innerHTML = "";
@@ -161,6 +162,7 @@
             });
         }
 
+        // Edit logo
         function handleLogoEdit() {
             const logo = document.getElementById("logo");
             const input = document.getElementById("logoInput");
@@ -188,7 +190,6 @@
 </head>
 
 <body>
-
     <header>
         <div class="logo">
             <img class="face" src="" alt="Logo" id="logo">
@@ -202,7 +203,6 @@
 
     <div class="main">
         <div class="container">
-
             <div class="article">
                 <div class="article-text">
                     <h1 id="articleTitle1"></h1>
@@ -225,7 +225,6 @@
             </div>
 
             <div id="articles-list"></div>
-
         </div>
     </div>
 
@@ -245,7 +244,6 @@
             <button onclick="handleAddLink(event)">+</button>
         </div>
     </footer>
-
 </body>
 
 </html>
