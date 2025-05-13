@@ -2,11 +2,10 @@
 <html>
 
 <head>
-    <title>Paasivu</title>
+    <title>Paasivu - Admin</title>
     <link rel="stylesheet" href="../index.css">
 
     <script>
-        
         function handleParagraphEdit(id = "title") {
             let isEditing = localStorage.getItem(`editMode-${id}`) === "true";
             isEditing = !isEditing;
@@ -31,8 +30,7 @@
         const linksList = savedLinks ? JSON.parse(savedLinks) : [];
 
         function handleLoad() {
-            const ids = ["title", "articleTitle1", "articleTitle2"];
-
+            const ids = ["title", "articleTitle1", "articleText1"];
             ids.forEach(id => {
                 const value = localStorage.getItem(id);
                 const element = document.getElementById(id);
@@ -43,6 +41,11 @@
                 }
             });
 
+            const savedLogo = localStorage.getItem("logo");
+            if (savedLogo) {
+                document.getElementById("logo").src = savedLogo;
+            }
+
             const listElement = document.getElementById("link-list");
             linksList.forEach(linkJson => {
                 const aElement = document.createElement("a");
@@ -50,6 +53,28 @@
                 aElement.href = linkJson.href;
                 listElement.appendChild(aElement);
             });
+
+            const savedArticles = localStorage.getItem("added-articles");
+            const articlesList = document.getElementById("articles-list");
+
+            if (savedArticles) {
+                const articles = JSON.parse(savedArticles);
+                articles.forEach((article, index) => {
+                    const div = document.createElement("div");
+                    div.className = "article";
+                    div.innerHTML = `
+                        <div class="article-text">
+                            <h1>${article.title}</h1>
+                            <p class="artikkeli">${article.content}</p>
+                        </div>
+                        <div class="article-image">
+                            <img>
+                        </div>
+                        <button onclick="handleRemoveArticle(${index})">-</button>
+                    `;
+                    articlesList.appendChild(div);
+                });
+            }
         }
 
         function handleAddLink(e) {
@@ -86,6 +111,78 @@
             }
         }
 
+        function handleAddArticle() {
+            const title = document.getElementById("articleTitleInput").value;
+            const content = document.getElementById("articleContentInput").value;
+
+            if (!title || !content) return;
+
+            const article = {
+                title: title,
+                content: content
+            };
+
+            let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
+            savedArticles.push(article);
+            localStorage.setItem("added-articles", JSON.stringify(savedArticles));
+
+            renderArticles(savedArticles);
+
+            document.getElementById("articleTitleInput").value = "";
+            document.getElementById("articleContentInput").value = "";
+        }
+
+        function handleRemoveArticle(index) {
+            let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
+            savedArticles.splice(index, 1);
+            localStorage.setItem("added-articles", JSON.stringify(savedArticles));
+
+            renderArticles(savedArticles);
+        }
+
+        function renderArticles(articles) {
+            const articlesList = document.getElementById("articles-list");
+            articlesList.innerHTML = "";
+
+            articles.forEach((article, index) => {
+                const div = document.createElement("div");
+                div.className = "article";
+                div.innerHTML = `
+                    <div class="article-text">
+                        <h1>${article.title}</h1>
+                        <p class="artikkeli">${article.content}</p>
+                    </div>
+                    <div class="article-image">
+                        <img>
+                    </div>
+                    <button onclick="handleRemoveArticle(${index})">-</button>
+                `;
+                articlesList.appendChild(div);
+            });
+        }
+
+        function handleLogoEdit() {
+            const logo = document.getElementById("logo");
+            const input = document.getElementById("logoInput");
+            const button = event.target;
+
+            const isEditing = button.innerHTML === "Edit";
+
+            if (isEditing) {
+                input.hidden = false;
+                input.value = logo.src;
+                button.innerHTML = "Save";
+            } else {
+                const newUrl = input.value.trim();
+                if (newUrl) {
+                    logo.src = newUrl;
+                    localStorage.setItem("logo", newUrl);
+                }
+                input.hidden = true;
+                button.innerHTML = "Edit";
+            }
+        }
+
         addEventListener("load", handleLoad);
     </script>
 </head>
@@ -94,10 +191,8 @@
 
     <header>
         <div class="logo">
-            <img class="king"
-                src="https://cdn.cfr.org/sites/default/files/styles/full_width_xl/public/image/2019/12/RTX79Q8D.webp"
-                alt="Logo" id="logo">
-            <input id="logoInput" hidden>
+            <img class="face" src="" alt="Logo" id="logo">
+            <input id="logoInput" placeholder="Enter logo URL" hidden>
             <button onclick="handleLogoEdit()">Edit</button>
         </div>
         <div class="text">
@@ -107,53 +202,30 @@
 
     <div class="main">
         <div class="container">
-            
+
             <div class="article">
                 <div class="article-text">
                     <h1 id="articleTitle1"></h1>
                     <input id="articleTitle1Input" hidden>
                     <button id="articleTitle1Button" onclick="handleParagraphEdit('articleTitle1')">Edit</button>
 
-                    <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
-                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
-
+                    <p class="artikkeli" id="articleText1"></p>
+                    <textarea id="articleText1Input" hidden rows="5" style="width: 100%;"></textarea>
+                    <button id="articleText1Button" onclick="handleParagraphEdit('articleText1')">Edit</button>
                 </div>
                 <div class="article-image">
-                    <img class="hakimi" src="https://img.uefa.com/imgml/TP/players/1/2025/cutoff/250088061.webp"
-                        alt="Psg">
+                    <img>
                 </div>
             </div>
 
-            <div class="article">
-                <div class="article-text">
-                    <h1 id="articleTitle2"></h1>
-                    <input id="articleTitle2Input" hidden>
-                    <button id="articleTitle2Button" onclick="handleParagraphEdit('articleTitle2')">Edit</button>
-
-                    <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
-                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
-
-                </div>
-                <div class="article-image">
-                    <img class="brahim" src="https://s.hs-data.com/bilder/spieler/gross/333919.jpg" alt="Realmadrid">
-                </div>
+            <div class="add-article">
+                <input id="articleTitleInput" placeholder="Article Title">
+                <textarea id="articleContentInput" placeholder="Article Content"></textarea>
+                <button onclick="handleAddArticle()">+</button>
             </div>
+
+            <div id="articles-list"></div>
+
         </div>
     </div>
 
@@ -164,8 +236,7 @@
             <button id="titleButton" onclick="handleParagraphEdit('title')">Edit</button>
             <p>Company Details: Address, Contact Info</p>
         </div>
-        <div id="link-list" class="footer-right">
-        </div>
+        <div id="link-list" class="footer-right"></div>
         <div class="footer-right">
             <div>
                 <input id="linkRef" placeholder="URL" hidden>
