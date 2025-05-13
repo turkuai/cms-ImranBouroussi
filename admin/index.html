@@ -6,95 +6,87 @@
     <link rel="stylesheet" href="../index.css">
 
     <script>
+        
+        function handleParagraphEdit(id = "title") {
+            let isEditing = localStorage.getItem(`editMode-${id}`) === "true";
+            isEditing = !isEditing;
 
-        let editParagraphMode = false;
+            const element = document.getElementById(id);
+            const input = document.getElementById(`${id}Input`);
+            const button = document.getElementById(`${id}Button`);
 
-        function handleParagraphEdit() {
-            console.log("handleTitleEdit", editParagraphMode);
-
-            editParagraphMode = !editParagraphMode;
-
-            console.log("after change", editParagraphMode);
-
-            const ParagraphElement = document.getElementById("title");
-            const inputElement = document.getElementById("titleInput");
-
-            if (!editParagraphMode) {
-                const title = inputElement.value;
-                ParagraphElement.innerHTML = title;
-                localStorage.setItem("title", title);
+            if (!isEditing) {
+                const value = input.value;
+                element.innerHTML = value;
+                localStorage.setItem(id, value);
             }
 
-            ParagraphElement.hidden = editParagraphMode;
-            inputElement.hidden = !editParagraphMode;
-            document.getElementById("titleButton").innerHTML = editParagraphMode ? "Save" : "Edit";
+            element.hidden = isEditing;
+            input.hidden = !isEditing;
+            button.innerHTML = isEditing ? "Save" : "Edit";
+            localStorage.setItem(`editMode-${id}`, isEditing);
         }
 
-        const savedLinks = localStorage.getItem("links-list")
-
-        const linksList = savedLinks ? JSON.parse(savedLinks) : []
+        const savedLinks = localStorage.getItem("links-list");
+        const linksList = savedLinks ? JSON.parse(savedLinks) : [];
 
         function handleLoad() {
-            const title = localStorage.getItem("title")
-            document.getElementById("title").innerHTML = title;
-            document.getElementById("titleInput").value = title;
+            const ids = ["title", "articleTitle1", "articleTitle2"];
 
-            // Here we create html element 
-            const listElement = document.getElementById("link-list")
+            ids.forEach(id => {
+                const value = localStorage.getItem(id);
+                const element = document.getElementById(id);
+                const input = document.getElementById(`${id}Input`);
+                if (value && element && input) {
+                    element.innerHTML = value;
+                    input.value = value;
+                }
+            });
 
+            const listElement = document.getElementById("link-list");
             linksList.forEach(linkJson => {
-                // <a href="https://www.tai.fi">TAI</a>
-                const aElement = document.createElement("a")
-                aElement.innerHTML = linkJson.name
-                aElement.href = linkJson.href
-
-                listElement.appendChild(aElement)
-
+                const aElement = document.createElement("a");
+                aElement.innerHTML = linkJson.name;
+                aElement.href = linkJson.href;
+                listElement.appendChild(aElement);
             });
         }
 
-        addEventListener("load", handleLoad)
-
         function handleAddLink(e) {
+            const button = e.target;
+            const editMode = button.innerHTML === "+";
+            const inputHidden = !editMode;
 
-            const button = e.target
-            const editMode = button.innerHTML == "+"
-            const inputHidden = !editMode
+            const refInput = document.getElementById("linkRef");
+            const nameInput = document.getElementById("linkName");
 
-            const refInput = document.getElementById("linkRef")
-            const nameInput = document.getElementById("linkName")
-
-            refInput.hidden = inputHidden
-            nameInput.hidden = inputHidden
+            refInput.hidden = inputHidden;
+            nameInput.hidden = inputHidden;
 
             if (editMode) {
-                button.innerHTML = "Save"
+                button.innerHTML = "Save";
             } else {
-                button.innerHTML = "+"
+                button.innerHTML = "+";
 
-                // Here we create html element 
-                const listElement = document.getElementById("link-list")
+                const listElement = document.getElementById("link-list");
 
-                // <a href="https://www.tai.fi">TAI</a>
-                const aElement = document.createElement("a")
-                aElement.innerHTML = nameInput.value
-                aElement.href = refInput.value
+                const aElement = document.createElement("a");
+                aElement.innerHTML = nameInput.value;
+                aElement.href = refInput.value;
 
-                listElement.appendChild(aElement)
+                listElement.appendChild(aElement);
 
-                // Here we save into the list
                 const linkJson = {
                     href: refInput.value,
                     name: nameInput.value,
-                }
-                linksList.push(linkJson)
+                };
+                linksList.push(linkJson);
 
-                localStorage.setItem("links-list", JSON.stringify(linksList))
+                localStorage.setItem("links-list", JSON.stringify(linksList));
             }
-
-
         }
 
+        addEventListener("load", handleLoad);
     </script>
 </head>
 
@@ -115,26 +107,48 @@
 
     <div class="main">
         <div class="container">
+            
             <div class="article">
                 <div class="article-text">
+                    <h1 id="articleTitle1"></h1>
+                    <input id="articleTitle1Input" hidden>
+                    <button id="articleTitle1Button" onclick="handleParagraphEdit('articleTitle1')">Edit</button>
+
                     <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
                         incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
                         ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
                         voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
+                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
+                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
+                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
                         non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
+
                 </div>
                 <div class="article-image">
                     <img class="hakimi" src="https://img.uefa.com/imgml/TP/players/1/2025/cutoff/250088061.webp"
                         alt="Psg">
                 </div>
             </div>
+
             <div class="article">
                 <div class="article-text">
+                    <h1 id="articleTitle2"></h1>
+                    <input id="articleTitle2Input" hidden>
+                    <button id="articleTitle2Button" onclick="handleParagraphEdit('articleTitle2')">Edit</button>
+
                     <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
                         incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
                         ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
                         voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
+                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
+                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
+                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
+                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
                         non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
+
                 </div>
                 <div class="article-image">
                     <img class="brahim" src="https://s.hs-data.com/bilder/spieler/gross/333919.jpg" alt="Realmadrid">
@@ -146,9 +160,9 @@
     <footer class="footer">
         <div class="footer-left">
             <p id="title"></p>
-            <p>Company Details: Address, Contact Info</p>
             <input id="titleInput" hidden>
-            <button id="titleButton" onclick="handleParagraphEdit()">Edit</button>
+            <button id="titleButton" onclick="handleParagraphEdit('title')">Edit</button>
+            <p>Company Details: Address, Contact Info</p>
         </div>
         <div id="link-list" class="footer-right">
         </div>
@@ -159,3 +173,8 @@
             </div>
             <button onclick="handleAddLink(event)">+</button>
         </div>
+    </footer>
+
+</body>
+
+</html>
