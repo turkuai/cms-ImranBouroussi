@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../index.css">
 
     <script>
-        
+
         function handleParagraphEdit(id = "title") {
             let isEditing = localStorage.getItem(`editMode-${id}`) === "true";
             isEditing = !isEditing;
@@ -31,6 +31,7 @@
         const linksList = savedLinks ? JSON.parse(savedLinks) : [];
 
         function handleLoad() {
+
             const ids = ["title", "articleTitle1", "articleTitle2"];
 
             ids.forEach(id => {
@@ -42,6 +43,8 @@
                     input.value = value;
                 }
             });
+
+
 
             const listElement = document.getElementById("link-list");
             linksList.forEach(linkJson => {
@@ -94,9 +97,8 @@
 
     <header>
         <div class="logo">
-            <img class="king"
-                src="https://cdn.cfr.org/sites/default/files/styles/full_width_xl/public/image/2019/12/RTX79Q8D.webp"
-                alt="Logo" id="logo">
+            <img class="king" src="https://logos-world.net/wp-content/uploads/2020/10/Nokia-Logo.png" alt="Logo"
+                id="logo">
             <input id="logoInput" hidden>
             <button onclick="handleLogoEdit()">Edit</button>
         </div>
@@ -107,54 +109,35 @@
 
     <div class="main">
         <div class="container">
-            
+
             <div class="article">
                 <div class="article-text">
                     <h1 id="articleTitle1"></h1>
                     <input id="articleTitle1Input" hidden>
                     <button id="articleTitle1Button" onclick="handleParagraphEdit('articleTitle1')">Edit</button>
 
-                    <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
-                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
+                    <p class="artikkeli"></p>
+
+                    <button id="articletextButton" onclick=""></button>
 
                 </div>
+
                 <div class="article-image">
-                    <img class="hakimi" src="https://img.uefa.com/imgml/TP/players/1/2025/cutoff/250088061.webp"
-                        alt="Psg">
+
                 </div>
+
             </div>
 
-            <div class="article">
-                <div class="article-text">
-                    <h1 id="articleTitle2"></h1>
-                    <input id="articleTitle2Input" hidden>
-                    <button id="articleTitle2Button" onclick="handleParagraphEdit('articleTitle2')">Edit</button>
-
-                    <p class="artikkeli">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.
-                        Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor
-                        incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat
-                        non provident, sunt in culpa qui official deserunt mollit anim id est laborum.</p>
-
-                </div>
-                <div class="article-image">
-                    <img class="brahim" src="https://s.hs-data.com/bilder/spieler/gross/333919.jpg" alt="Realmadrid">
-                </div>
+            <div class="add-article">
+                <input id="articleTitleInput" placeholder="Article Title">
+                <textarea id="articleContentInput" placeholder="Article Content"></textarea>
+                <button onclick="handleAddArticle()">+</button>
             </div>
+
+            <div id="articles-list"></div>
+
         </div>
+
     </div>
 
     <footer class="footer">
