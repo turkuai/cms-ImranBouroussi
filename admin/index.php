@@ -217,25 +217,62 @@
                     <img>
                 </div>
             </div>
-
+            <form method="POST">
             <div class="add-article">
-                <input id="articleTitleInput" placeholder="Article Title">
-                <textarea id="articleContentInput" placeholder="Article Content"></textarea>
-                <button onclick="handleAddArticle()">+</button>
+                <input id="articleTitleInput" placeholder="Article Title" name="title">
+                <textarea id="articleContentInput" placeholder="Article Content" name="description"></textarea>
+                <button>+</button>
             </div>
+            </form>
 
             <div id="articles-list"></div>
 
         </div>
     </div>
 
-    <footer class="footer">
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $title = htmlspecialchars($_POST['title']);
+  $description = htmlspecialchars($_POST['description']);
+  if (empty($name)) {
+    echo "Name is empty";
+  } else {
+    echo $name;
+  }
+}
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "cms";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "INSERT INTO sections (title, description)
+VALUES ('$title', '$description')";
+
+if ($conn->query($sql) === TRUE) {
+  echo "New record created successfully";
+} else {
+  echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+$conn->close();
+?>
+
+    <footer class="footer"> <form action="" method="POST">
         <div class="footer-left">
             <p id="title"></p>
-            <input id="titleInput" hidden>
-            <button id="titleButton" onclick="handleParagraphEdit('title')">Edit</button>
+            <input id="titleInput" hidden name="Aname">
+            <button id="titleButton">Edit</button>
             <p>Company Details: Address, Contact Info</p>
-        </div>
+        </div> </form>
         <div id="link-list" class="footer-right"></div>
         <div class="footer-right">
             <div>
@@ -247,5 +284,7 @@
     </footer>
 
 </body>
+
+
 
 </html>
