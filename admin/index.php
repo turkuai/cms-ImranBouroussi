@@ -232,16 +232,6 @@
 
 <?php
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $title = htmlspecialchars($_POST['title']);
-  $description = htmlspecialchars($_POST['description']);
-  if (empty($name)) {
-    echo "Name is empty";
-  } else {
-    echo $name;
-  }
-}
-
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -254,7 +244,16 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "INSERT INTO sections (title, description)
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $title = htmlspecialchars($_POST['title']);
+  $description = htmlspecialchars($_POST['description']);
+  if (empty($name)) {
+    echo "Name is empty";
+  } else {
+    echo $name;
+  }
+
+  $sql = "INSERT INTO sections (title, description)
 VALUES ('$title', '$description')";
 
 if ($conn->query($sql) === TRUE) {
@@ -262,6 +261,21 @@ if ($conn->query($sql) === TRUE) {
 } else {
   echo "Error: " . $sql . "<br>" . $conn->error;
 }
+}
+
+$sql = "SELECT id, title, description FROM sections";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  while($row = $result->fetch_assoc()) {
+    echo "ID: " . $row["id"] . 
+         " - Title: " . $row["title"] . 
+         " - Description: " . $row["description"] . "<br>";
+  }
+} else {
+  echo "0 results";
+}
+
 
 $conn->close();
 ?>
