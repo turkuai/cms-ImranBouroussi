@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Paasivu - Admin</title>
+    <link rel="stylesheet" href="../index.css">
+
+    <script>
+        function handleParagraphEdit(id = "title") {
+            let isEditing = localStorage.getItem(`editMode-${id}`) === "true";
+            isEditing = !isEditing;
+
+            const element = document.getElementById(id);
+            const input = document.getElementById(`${id}Input`);
+            const button = document.getElementById(`${id}Button`);
+
+            if (!isEditing) {
+                const value = input.value;
+                element.innerHTML = value;
+                localStorage.setItem(id, value);
+            }
+
+            element.hidden = isEditing;
+            input.hidden = !isEditing;
+            button.innerHTML = isEditing ? "Save" : "Edit";
+            localStorage.setItem(`editMode-${id}`, isEditing);
+        }
+
+        const savedLinks = localStorage.getItem("links-list");
+        const linksList = savedLinks ? JSON.parse(savedLinks) : [];
+
+        function handleLoad() {
+            const ids = ["title", "articleTitle1", "articleText1"];
+            ids.forEach(id => {
+                const value = localStorage.getItem(id);
+                const element = document.getElementById(id);
+                const input = document.getElementById(`${id}Input`);
+                if (value && element && input) {
+                    element.innerHTML = value;
+                    input.value = value;
+                }
+            });
+
+            const savedLogo = localStorage.getItem("logo");
+            if (savedLogo) {
+                document.getElementById("logo").src = savedLogo;
+            }
+
+            const listElement = document.getElementById("link-list");
+            linksList.forEach(linkJson => {
+                const aElement = document.createElement("a");
+                aElement.innerHTML = linkJson.name;
+                aElement.href = linkJson.href;
+                listElement.appendChild(aElement);
+            });
+
+            const savedArticles = localStorage.getItem("added-articles");
+            const articlesList = document.getElementById("articles-list");
+
+            if (savedArticles) {
+                const articles = JSON.parse(savedArticles);
+                articles.forEach((article, index) => {
+                    const div = document.createElement("div");
+                    div.className = "article";
+                    div.innerHTML = `
+                        <div class="article-text">
+                            <h1>${article.title}</h1>
+                            <p class="artikkeli">${article.content}</p>
+                        </div>
+                        <div class="article-image">
+                            <img>
+                        </div>
+                        <button onclick="handleRemoveArticle(${index})">-</button>
+                    `;
+                    articlesList.appendChild(div);
+                });
+            }
+        }
+
+        function handleAddLink(e) {
+            const button = e.target;
+            const editMode = button.innerHTML === "+";
+            const inputHidden = !editMode;
+
+            const refInput = document.getElementById("linkRef");
+            const nameInput = document.getElementById("linkName");
+
+            refInput.hidden = inputHidden;
+            nameInput.hidden = inputHidden;
+
+            if (editMode) {
+                button.innerHTML = "Save";
+            } else {
+                button.innerHTML = "+";
+
+                const listElement = document.getElementById("link-list");
+
+                const aElement = document.createElement("a");
+                aElement.innerHTML = nameInput.value;
+                aElement.href = refInput.value;
+
+                listElement.appendChild(aElement);
+
+                const linkJson = {
+                    href: refInput.value,
+                    name: nameInput.value,
+                };
+                linksList.push(linkJson);
+
+                localStorage.setItem("links-list", JSON.stringify(linksList));
+            }
+        }
+
+        function handleAddArticle() {
+            const title = document.getElementById("articleTitleInput").value;
+            const content = document.getElementById("articleContentInput").value;
+
+            if (!title || !content) return;
+
+            const article = {
+                title: title,
+                content: content
+            };
+
+            let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
+            savedArticles.push(article);
+            localStorage.setItem("added-articles", JSON.stringify(savedArticles));
+
+            renderArticles(savedArticles);
+
+            document.getElementById("articleTitleInput").value = "";
+            document.getElementById("articleContentInput").value = "";
+        }
+
+        function handleRemoveArticle(index) {
+            let savedArticles = JSON.parse(localStorage.getItem("added-articles")) || [];
+            savedArticles.splice(index, 1);
+            localStorage.setItem("added-articles", JSON.stringify(savedArticles));
+
+            renderArticles(savedArticles);
+        }
+
+        function renderArticles(articles) {
+            const articlesList = document.getElementById("articles-list");
+            articlesList.innerHTML = "";
+
+            articles.forEach((article, index) => {
+                const div = document.createElement("div");
+                div.className = "article";
+                div.innerHTML = `
+                    <div class="article-text">
+                        <h1>${article.title}</h1>
+                        <p class="artikkeli">${article.content}</p>
+                    </div>
+                    <div class="article-image">
+                        <img>
+                    </div>
+                    <button onclick="handleRemoveArticle(${index})">-</button>
+                `;
+                articlesList.appendChild(div);
+            });
+        }
+
+        function handleLogoEdit() {
+            const logo = document.getElementById("logo");
+            const input = document.getElementById("logoInput");
+            const button = event.target;
+
+            const isEditing = button.innerHTML === "Edit";
+
+            if (isEditing) {
+                input.hidden = false;
+                input.value = logo.src;
+                button.innerHTML = "Save";
+            } else {
+                const newUrl = input.value.trim();
+                if (newUrl) {
+                    logo.src = newUrl;
+                    localStorage.setItem("logo", newUrl);
+                }
+                input.hidden = true;
+                button.innerHTML = "Edit";
+            }
+        }
+
+        addEventListener("load", handleLoad);
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <img class="face" src="" alt="Logo" id="logo">
+            <input id="logoInput" placeholder="Enter logo URL" hidden>
+            <button onclick="handleLogoEdit()">Edit</button>
+        </div>
+        <div class="text">
+            <a href="#">Home</a> <a href="#">About</a> <a href="#">Blog</a>
+        </div>
+    </header>
+
+    <div class="main">
+        <div class="container">
+
+            <div class="article">
+                <div class="article-text">
+                    <h1 id="articleTitle1"></h1>
+                    <input id="articleTitle1Input" hidden>
+                    <button id="articleTitle1Button" onclick="handleParagraphEdit('articleTitle1')">Edit</button>
+
+                    <p class="artikkeli" id="articleText1"></p>
+                    <textarea id="articleText1Input" hidden rows="5" style="width: 100%;"></textarea>
+                    <button id="articleText1Button" onclick="handleParagraphEdit('articleText1')">Edit</button>
+                </div>
+                <div class="article-image">
+                    <img>
+                </div>
+            </div>
+            <form method="POST">
+            <div class="add-article">
+                <input id="articleTitleInput" placeholder="Article Title" name="title">
+                <textarea id="articleContentInput" placeholder="Article Content" name="description"></textarea>
+                <button>+</button>
+            </div>
+            </form>
+
+            <div id="articles-list"></div>
+
+        </div>
+    </div>
+
+<?php
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "cms";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $title = htmlspecialchars($_POST['title']);
+  $description = htmlspecialchars($_POST['description']);
+  if (empty($name)) {
+    echo "Name is empty";
+  } else {
+    echo $name;
+  }
+
+  $sql = "INSERT INTO sections (title, description)
+VALUES ('$title', '$description')";
+
+if ($conn->query($sql) === TRUE) {
+  echo "New record created successfully";
+} else {
+  echo "Error: " . $sql . "<br>" . $conn->error;
+}
+}
+
+$sql = "SELECT id, title, description FROM sections";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  while($row = $result->fetch_assoc()) {
+    echo "ID: " . $row["id"] . 
+         " - Title: " . $row["title"] . 
+         " - Description: " . $row["description"] . "<br>";
+  }
+} else {
+  echo "0 results";
+}
+
+
+$conn->close();
+?>
+
+    <footer class="footer"> <form action="" method="POST">
+        <div class="footer-left">
+            <p id="title"></p>
+            <input id="titleInput" hidden name="Aname">
+            <button id="titleButton">Edit</button>
+            <p>Company Details: Address, Contact Info</p>
+        </div> </form>
+        <div id="link-list" class="footer-right"></div>
+        <div class="footer-right">
+            <div>
+                <input id="linkRef" placeholder="URL" hidden>
+                <input id="linkName" placeholder="Name" hidden>
+            </div>
+            <button onclick="handleAddLink(event)">+</button>
+        </div>
+    </footer>
+
+</body>
+
+
+
+</html>
